@@ -1,4 +1,4 @@
-package net.srikanths.util.clipboardpingpong;
+package net.srikanths.clipboardpingpong;
 
 public class InvalidPingPongConfigurationException extends Exception {
   private static final long serialVersionUID = 1L;
