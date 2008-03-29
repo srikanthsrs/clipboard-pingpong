@@ -1,4 +1,4 @@
-package net.srikanths.util.clipboardpingpong;
+package net.srikanths.clipboardpingpong;
 
 import java.awt.datatransfer.ClipboardOwner;
 

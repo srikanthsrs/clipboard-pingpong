@@ -1,4 +1,4 @@
-package net.srikanths.util.clipboardpingpong;
+package net.srikanths.clipboardpingpong;
 
 public interface ContentsReceiver extends Runnable {
   public void setClipboardHelper(ClipboardHelper helper);

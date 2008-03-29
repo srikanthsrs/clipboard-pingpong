@@ -1,4 +1,4 @@
-package net.srikanths.util.clipboardpingpong;
+package net.srikanths.clipboardpingpong;
 
 public interface ContentsListener {
   public void newContentsReceived(String contents);
