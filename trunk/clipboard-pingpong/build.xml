@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="clipboard-copier" default="build">
+  <description>
+    Send your clipboard contents to other computers and receive theirs.
+  </description>
+
+  <property file="build.properties" />
+
+  <target name="build">
+    <echo message="--------------------------------------------------------" />
+    <echo
+        message="Building Project: ${project.name}, Version: ${project.version}"
+    />
+    <echo message="--------------------------------------------------------" />
+    <antcall target="clean" />
+    <antcall target="prepare" />
+    <antcall target="compile" />
+    <antcall target="jar" />
+  </target>
+
+  <target name="clean">
+    <echo message="Cleaning the output directory." />
+    <delete dir="${project.output}" />
+  </target>
+
+  <target name="prepare">
+    <echo message="Preparing for a new build..." />
+    <mkdir dir="${project.output}" />
+    <mkdir dir="${project.classes}"/>
+  </target>
+
+  <target name="compile">
+    <echo message="Compiling..." />
+    <javac
+        source="1.4"
+        srcdir="${project.src}"
+        destdir="${project.classes}"
+    />
+  </target>
+
+  <target name="jar">
+    <echo message="Creating the jar file: ${project.jarname}" />
+    <jar destfile="${project.output}/${project.jarname}"
+        basedir="${project.classes}">
+      <fileset dir="${project.dir}">
+        <include name="build.properties"/>
+      </fileset>
+
+      <manifest>
+        <attribute name="Built-By" value="${project.built-by}" />
+        <attribute name="Main-Class" value="${project.main-class}" />
+      </manifest>
+    </jar>
+
+    <delete dir="${project.classes}" />
+  </target>
+</project>
