@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="clipboard-copier" default="build">
+<project name="clipboard-pingpong" default="build">
   <description>
     Send your clipboard contents to other computers and receive theirs.
   </description>
