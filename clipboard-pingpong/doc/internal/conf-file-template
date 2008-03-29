@@ -1,0 +1,6 @@
+[server]
+port=55555
+
+[receivers]
+host1=port1
+host2=port2
