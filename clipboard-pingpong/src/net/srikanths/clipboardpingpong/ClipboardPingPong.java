@@ -7,7 +7,6 @@ public class ClipboardPingPong {
     configuration.loadProperties();
 
     ClipboardHelper clipboardHelper = new DefaultClipboardHelper();
-    clipboardHelper.setContents(clipboardHelper.getContents());
     ContentsDistributor contentsDistributor = new SocketContentsDistributor(
         configuration.getReceiverAddresses());
     clipboardHelper.addContentsListener(contentsDistributor);
