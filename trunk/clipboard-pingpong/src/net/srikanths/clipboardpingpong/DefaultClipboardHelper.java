@@ -11,6 +11,16 @@ import java.util.List;
 import java.util.Vector;
 
 public class DefaultClipboardHelper implements ClipboardHelper {
+  //
+  // *NOTE*: Never use clipboard.setContents() and clipboard.getContents()
+  //         as we are experiencing some weird problem about which we do not
+  //         have good knowledge.
+  //
+  // Look at Issue no: 2 for more details.
+  //
+  private static final int MAX_CLIPBOARD_RETRY = 10;
+  private static final int SLEEP_TIME_IN_MILLIS = 20;
+
   private Clipboard clipboard;
   private List contentsListeners;
 
@@ -29,7 +39,7 @@ public class DefaultClipboardHelper implements ClipboardHelper {
   }
 
   public String getContents() throws UnsupportedFlavorException {
-    Transferable contents = clipboard.getContents(this);
+    Transferable contents = getContentsWrapperForClipboard();
     if (contents == null) {
       return null;
     }
@@ -47,7 +57,7 @@ public class DefaultClipboardHelper implements ClipboardHelper {
     }
 
     StringSelection stringSelection = new StringSelection(contents);
-    clipboard.setContents(stringSelection, this);
+    setContentsWrapperForClipboard(stringSelection);
   }
 
   public void lostOwnership(Clipboard clipboard, Transferable contents) {
@@ -79,6 +89,54 @@ public class DefaultClipboardHelper implements ClipboardHelper {
   }
 
   private void takeClipboardOwnership() {
-    clipboard.setContents(clipboard.getContents(this), this);
+    setContentsWrapperForClipboard(getContentsWrapperForClipboard());
+  }
+
+  private Transferable getContentsWrapperForClipboard() {
+    IllegalStateException thrownException = null;
+    for (int i = 0; i < MAX_CLIPBOARD_RETRY; i++) {
+      try {
+        Transferable contents = clipboard.getContents(this);
+        return contents;
+      } catch (IllegalStateException illegalStateException) {
+        thrownException = illegalStateException;
+        try {
+          Thread.sleep(SLEEP_TIME_IN_MILLIS);
+        } catch (InterruptedException interruptedException) {}
+        continue;
+      }
+    }
+
+    // If we reach this far, then it means we just couldn't get the contents.
+    if (thrownException == null) {
+      String error = "Could not get clipboard contents.";
+      thrownException = new IllegalStateException(error);
+    }
+
+    throw thrownException;
+  }
+
+  private void setContentsWrapperForClipboard(Transferable contents) {
+    IllegalStateException thrownException = null;
+    for (int i = 0; i < MAX_CLIPBOARD_RETRY; i++) {
+      try {
+        clipboard.setContents(contents, this);
+        return;
+      } catch (IllegalStateException illegalStateException) {
+        thrownException = illegalStateException;
+        try {
+          Thread.sleep(SLEEP_TIME_IN_MILLIS);
+        } catch (InterruptedException interruptedException) {}
+        continue;
+      }
+    }
+
+    // If we reach this far, then it means we just couldn't set the contents.
+    if (thrownException == null) {
+      String error = "Could not set clipboard contents.";
+      thrownException = new IllegalStateException(error);
+    }
+
+    throw thrownException;
   }
 }
