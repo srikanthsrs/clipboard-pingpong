@@ -16,4 +16,8 @@ public class SocketAddress {
   public int getPort() {
     return port;
   }
+
+  public String toString() {
+    return host + ":" + port;
+  }
 }

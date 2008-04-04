@@ -28,8 +28,10 @@ public class SocketContentsDistributor implements ContentsDistributor {
         outputStream.write(contents.getBytes());
         outputStream.flush();
       } catch (IOException e) {
-        // TODO(srikanths): Handle this.
-        e.printStackTrace();
+        // TODO(srikanths): We need to do more here than just spit out the
+        // error message.
+        String message = "Could not send new contents to: " + socketAddress;
+        System.out.println(message);
       }
     }
   }

@@ -100,9 +100,7 @@ public class DefaultClipboardHelper implements ClipboardHelper {
         return contents;
       } catch (IllegalStateException illegalStateException) {
         thrownException = illegalStateException;
-        try {
-          Thread.sleep(SLEEP_TIME_IN_MILLIS);
-        } catch (InterruptedException interruptedException) {}
+        Util.sleepSilently(SLEEP_TIME_IN_MILLIS);
         continue;
       }
     }
@@ -124,9 +122,7 @@ public class DefaultClipboardHelper implements ClipboardHelper {
         return;
       } catch (IllegalStateException illegalStateException) {
         thrownException = illegalStateException;
-        try {
-          Thread.sleep(SLEEP_TIME_IN_MILLIS);
-        } catch (InterruptedException interruptedException) {}
+        Util.sleepSilently(SLEEP_TIME_IN_MILLIS);
         continue;
       }
     }

@@ -1,7 +1,7 @@
 package net.srikanths.clipboardpingpong;
 
-public interface ContentsReceiver extends Runnable {
+public interface ContentsReceiver extends Runnable, ShutdownListener {
   public void setClipboardHelper(ClipboardHelper helper);
 
-  public void changeSystemClipboardContents(String contents);
+  public void fireSystemClipboardChange(String contents);
 }

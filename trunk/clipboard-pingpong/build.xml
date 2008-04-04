@@ -4,18 +4,15 @@
     Send your clipboard contents to other computers and receive theirs.
   </description>
 
-  <property file="build.properties" />
+  <property name="build.properties" location="./src/build.properties" />
+  <property file="${build.properties}" />
 
-  <target name="build">
+  <target name="build" depends="jar">
     <echo message="--------------------------------------------------------" />
     <echo
         message="Building Project: ${project.name}, Version: ${project.version}"
     />
     <echo message="--------------------------------------------------------" />
-    <antcall target="clean" />
-    <antcall target="prepare" />
-    <antcall target="compile" />
-    <antcall target="jar" />
   </target>
 
   <target name="clean">
@@ -23,13 +20,13 @@
     <delete dir="${project.output}" />
   </target>
 
-  <target name="prepare">
+  <target name="prepare" depends="clean">
     <echo message="Preparing for a new build..." />
     <mkdir dir="${project.output}" />
     <mkdir dir="${project.classes}"/>
   </target>
 
-  <target name="compile">
+  <target name="compile" depends="prepare">
     <echo message="Compiling..." />
     <javac
         source="1.4"
@@ -38,12 +35,12 @@
     />
   </target>
 
-  <target name="jar">
+  <target name="jar" depends="compile">
     <echo message="Creating the jar file: ${project.jarname}" />
     <jar destfile="${project.output}/${project.jarname}"
         basedir="${project.classes}">
-      <fileset dir="${project.dir}">
-        <include name="build.properties"/>
+      <fileset dir="${project.src}">
+        <include name="build.properties" />
       </fileset>
 
       <manifest>
