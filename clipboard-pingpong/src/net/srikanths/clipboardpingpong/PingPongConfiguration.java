@@ -75,7 +75,8 @@ public class PingPongConfiguration {
         if (expected == ConfigurationAttributes.SERVER_SECTION) {
           if (!ConfigurationAttributes.isServerSection(line)) {
             String message = "Invalid configuration, expected server section."
-                + C.NL + "Error at line number: " + lineNumber;
+                + C.NL + "Error at line number: " + lineNumber
+                + " in " + Util.getFullName(configurationFile);
             throw new InvalidPingPongConfigurationException(message);
           }
 
@@ -83,15 +84,17 @@ public class PingPongConfiguration {
         } else if (expected == ConfigurationAttributes.SERVER_PORT_ENTRY) {
           if (!ConfigurationAttributes.isServerPortEntry(line)) {
             String message = "Invalid configuration, expected server port "
-                + "entry." + C.NL + "Error at line number: " + lineNumber;
+                + "entry." + C.NL + "Error at line number: " + lineNumber
+                + " in " + Util.getFullName(configurationFile);
             throw new InvalidPingPongConfigurationException(message);
           }
 
-          String portAsString = line.replace(
+          String portAsString = line.replaceFirst(
               ConfigurationAttributes.SERVER_PORT_ENTRY_PREFIX , "");
           String invalidPortMessage = "Invalid configuration file. "
               + "Server port must be a number between 1025 and 65535."
-              + C.NL + "Error at line number: " + lineNumber;
+              + C.NL + "Error at line number: " + lineNumber
+              + " in " + Util.getFullName(configurationFile);
           int port;
           try {
             port = Integer.parseInt(portAsString);
@@ -108,7 +111,8 @@ public class PingPongConfiguration {
         } else if (expected == ConfigurationAttributes.RECEIVERS_SECTION) {
           if (!ConfigurationAttributes.isReceiversSection(line)) {
             String message = "Invalid configuration, expected receivers "
-                + "section." + C.NL + "Error at line number: " + lineNumber;
+                + "section." + C.NL + "Error at line number: " + lineNumber
+                + " in " + Util.getFullName(configurationFile);
             throw new InvalidPingPongConfigurationException(message);
           }
 
@@ -116,7 +120,8 @@ public class PingPongConfiguration {
         } else if (expected == ConfigurationAttributes.RECEIVER_ENTRY) {
           if (!ConfigurationAttributes.isReceiverEntry(line)) {
             String message = "Invalid configuration, expected receiver's entry."
-                + C.NL + "Error at line number: " + lineNumber;
+                + C.NL + "Error at line number: " + lineNumber
+                + " in " + Util.getFullName(configurationFile);
             throw new InvalidPingPongConfigurationException(message);
           }
 
@@ -127,7 +132,8 @@ public class PingPongConfiguration {
               = line.substring(indexOfReceiverEntrySeparator + 1);
           String invalidPortMessage = "Invalid configuration file. "
               + "Receiver's port must be a number between 1025 and 65535."
-              + C.NL + "Error at line number: " + lineNumber;
+              + C.NL + "Error at line number: " + lineNumber
+              + " in " + Util.getFullName(configurationFile);
           int port;
           try {
             port = Integer.parseInt(portAsString);
@@ -148,7 +154,8 @@ public class PingPongConfiguration {
 
       // Now, our expected must be ConfigurationAttributes.RECEIVER_ENTRY
       if (expected != ConfigurationAttributes.RECEIVER_ENTRY) {
-        String message = "Invalid configuration.";
+        String message = "Invalid configuration file: "
+            + Util.getFullName(configurationFile);;
         throw new InvalidPingPongConfigurationException(message);
       }
     } catch (IOException e) {
@@ -195,7 +202,7 @@ public class PingPongConfiguration {
     public static final ConfigurationAttributes SERVER_SECTION
         = new ConfigurationAttributes("[server]");
     public static final ConfigurationAttributes SERVER_PORT_ENTRY
-        = new ConfigurationAttributes("SERVER_PORT");
+        = new ConfigurationAttributes("SERVER_PORT_ENTRY");
     public static final ConfigurationAttributes RECEIVERS_SECTION
         = new ConfigurationAttributes("[receivers]");
     public static final ConfigurationAttributes RECEIVER_ENTRY
@@ -239,7 +246,7 @@ public class PingPongConfiguration {
     }
 
     public static boolean isReceiverEntry(String entry) {
-      return (entry.contains(ENTRY_SEPARATOR)
+      return ((entry.indexOf(ENTRY_SEPARATOR) != -1)
           && (entry.charAt(0) != ENTRY_SEPARATOR_AS_CHAR)
           && (entry.charAt(entry.length() - 1) != ENTRY_SEPARATOR_AS_CHAR));
     }

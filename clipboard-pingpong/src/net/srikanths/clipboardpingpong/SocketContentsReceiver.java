@@ -9,15 +9,25 @@ import java.net.SocketTimeoutException;
 public class SocketContentsReceiver implements ContentsReceiver, Runnable {
   private ClipboardHelper clipboardHelper;
   private ServerSocket serverSocket;
+  private boolean shutdown;
 
   public SocketContentsReceiver(int port, ClipboardHelper helper)
       throws IOException {
     setClipboardHelper(helper);
-    serverSocket = new ServerSocket(port);
-    serverSocket.setSoTimeout(10 * 1000);
+
+    try {
+      serverSocket = new ServerSocket(port);
+      serverSocket.setSoTimeout(C.SO_TIMEOUT);
+    } catch (IOException e) {
+      String error = "Cannot open Server at port: '" + port + "'"
+          + C.NL + e.getMessage();
+      IOException modifiedException = new IOException(error);
+      modifiedException.setStackTrace(e.getStackTrace());
+      throw modifiedException;
+    }
   }
 
-  public void changeSystemClipboardContents(String contents) {
+  public void fireSystemClipboardChange(String contents) {
     clipboardHelper.setContents(contents);
   }
 
@@ -27,6 +37,13 @@ public class SocketContentsReceiver implements ContentsReceiver, Runnable {
 
   public void run() {
     while (true) {
+      synchronized (this) {
+        if (shutdown) {
+          System.out.println("Closing SocketContentsReceiver thread...");
+          return;
+        }
+      }
+
       try {
         Socket client = serverSocket.accept();
         DataInputStream inputStream
@@ -37,13 +54,22 @@ public class SocketContentsReceiver implements ContentsReceiver, Runnable {
         String newContents = new String(contents);
         System.out.println("Received new contents, changing clipboard to: "
             + newContents);
-        changeSystemClipboardContents(newContents);
+        fireSystemClipboardChange(newContents);
       } catch (SocketTimeoutException e) {
         // Socket timeout, continue for now.
       } catch (IOException e) {
-        // TODO Do something.
-        e.printStackTrace();
+        System.out.println("IOException: " + e.getMessage());
       }
+    }
+  }
+
+  public synchronized void shutdown() {
+    shutdown = true;
+    try {
+      serverSocket.close();
+    } catch (IOException e) {
+      System.out.println(
+          "Error while closing the contents receiver server socket.;");
     }
   }
 }
