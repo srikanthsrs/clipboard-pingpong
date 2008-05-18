@@ -1,5 +1,7 @@
 Thanks for downloading Clipboard Ping.
 
+License: http://www.gnu.org/licenses/gpl.html
+
 HOW TO USE?
 -----------
 These are the steps:
