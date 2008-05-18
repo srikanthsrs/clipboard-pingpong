@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2007 Free Software Foundation, Inc.
+ *
+ * Licensed under the GNU General Public License, Version 3.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.gnu.org/licenses/gpl.html
+ *
+ * Software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.srikanths.clipboardpingpong;
 
 import java.io.IOException;
@@ -5,7 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-
+/**
+ *
+ * @author Srikanth S
+ */
 public class ClipboardPingPong {
   public ClipboardPingPong(String[] args) {
     BuildProperties buildProperties;
@@ -20,7 +37,8 @@ public class ClipboardPingPong {
     try {
       optParser = new PingPongOptParser(args, buildProperties);
     } catch (OptParseException e) {
-      System.out.println(e.getMessage());
+      System.out.println(e.getMessage() + C.NL);
+      System.out.println("Please make sure you have configured the server.");
       return;
     }
 
@@ -46,12 +64,6 @@ public class ClipboardPingPong {
 
     if (optParser.isStartServer()) {
       startServer(configuration);
-      return;
-    }
-
-    if (optParser.isConfigure()) {
-      // TODO(srikanths): Should open the configuration utility.
-      System.out.println("Configuration utility will be started in future.");
       return;
     }
 
@@ -99,7 +111,6 @@ public class ClipboardPingPong {
 
     private boolean version;
     private boolean startServer;
-    private boolean configure;
     private boolean shutdown;
 
     //
@@ -108,15 +119,11 @@ public class ClipboardPingPong {
     private static final String VERSION_OPT_LONG = "--version";
     private static final String VERSION_OPT_SHORT = "-version";
 
-    private static final String CONFIGURE_OPT_LONG = "--configure";
-    private static final String CONFIGURE_OPT_SHORT = "-c";
-
     private static final String SHUTDOWN_OPT_LONG = "--shutdown";
     private static final String SHUTDOWN_OPT_SHORT = "-x";
 
     private String[] validOptions = {
         VERSION_OPT_LONG, VERSION_OPT_SHORT,
-        CONFIGURE_OPT_LONG, CONFIGURE_OPT_SHORT,
         SHUTDOWN_OPT_LONG, SHUTDOWN_OPT_SHORT
     };
 
@@ -137,19 +144,8 @@ public class ClipboardPingPong {
         version = true;
       }
 
-      if (options.contains(CONFIGURE_OPT_LONG)
-          || options.contains(CONFIGURE_OPT_SHORT)) {
-        configure = true;
-      }
-
       if (options.contains(SHUTDOWN_OPT_LONG)
           || options.contains(SHUTDOWN_OPT_SHORT)) {
-        if (configure) {
-          String error = "Cannot use " + SHUTDOWN_OPT_LONG + " and "
-              + CONFIGURE_OPT_LONG + " together." + C.NL + getUsage();
-          throw new OptParseException(error);
-        }
-
         shutdown = true;
       }
 
@@ -162,7 +158,7 @@ public class ClipboardPingPong {
         throw new OptParseException(error);
       }
 
-      if (!(shutdown || configure)) {
+      if (!(shutdown || version)) {
         startServer = true;
       }
     }
@@ -175,10 +171,6 @@ public class ClipboardPingPong {
       return startServer;
     }
 
-    public boolean isConfigure() {
-      return configure;
-    }
-
     public boolean isShutdown() {
       return shutdown;
     }
@@ -188,7 +180,6 @@ public class ClipboardPingPong {
       usage.append("Usage: java -jar ")
           .append(buildProperties.get(BuildProperties.PROJECT_JAR_NAME))
           .append(" [").append(VERSION_OPT_LONG).append(" | ")
-          .append(CONFIGURE_OPT_LONG).append(" | ")
           .append(SHUTDOWN_OPT_LONG).append("]").append(C.NL).append(C.NL)
 
           .append("*** NO OPTIONS == START SERVER ***").append(C.NL)
@@ -199,10 +190,6 @@ public class ClipboardPingPong {
           .append(C.TAB)
           .append(pad(VERSION_OPT_LONG + " | " + VERSION_OPT_SHORT))
           .append(" --> To print the version of the software.").append(C.NL)
-
-          .append(C.TAB)
-          .append(pad(CONFIGURE_OPT_LONG + " | " + CONFIGURE_OPT_SHORT))
-          .append(" --> To start the configuration utility.").append(C.NL)
 
           .append(C.TAB)
           .append(pad(SHUTDOWN_OPT_LONG + " | " + SHUTDOWN_OPT_SHORT))
