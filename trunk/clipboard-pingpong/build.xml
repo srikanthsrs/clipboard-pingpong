@@ -7,7 +7,7 @@
   <property name="build.properties" location="./src/build.properties" />
   <property file="${build.properties}" />
 
-  <target name="build" depends="jar">
+  <target name="build" depends="create-installer">
     <echo message="--------------------------------------------------------" />
     <echo
         message="Building Project: ${project.name}, Version: ${project.version}"
@@ -50,5 +50,24 @@
     </jar>
 
     <delete dir="${project.classes}" />
+  </target>
+
+  <target name="create-installer" depends="jar">
+    <mkdir dir="${project.installer}" />
+    <copy
+        todir="${project.installer}"
+        file="${project.output}/${project.jarname}"
+    />
+    <delete file="${project.output}/${project.jarname}" />
+    <copy todir="${project.installer}">
+      <fileset dir="${project.build.artifact}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <zip
+        destfile="${project.output}/${project.installer.zipname}"
+        basedir="${project.installer}"
+    />
+    <delete dir="${project.installer}" />
   </target>
 </project>

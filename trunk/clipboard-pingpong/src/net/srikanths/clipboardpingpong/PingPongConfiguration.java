@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2007 Free Software Foundation, Inc.
+ *
+ * Licensed under the GNU General Public License, Version 3.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.gnu.org/licenses/gpl.html
+ *
+ * Software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.srikanths.clipboardpingpong;
 
 import java.io.BufferedReader;
@@ -9,6 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ *
+ * @author Srikanth S
+ */
 public class PingPongConfiguration {
   public static final int DEFAULT_SERVER_PORT = 55555;
   public static final String CONFIGURATION_FILE_NAME = "pingpong.conf";
@@ -68,7 +86,8 @@ public class PingPongConfiguration {
         }
 
         line = line.trim();
-        if (line.length() == 0) {
+        if (line.length() == 0
+            || line.startsWith(ConfigurationAttributes.COMMENT_DELIMETER)) {
           continue;
         }
 
@@ -198,6 +217,8 @@ public class PingPongConfiguration {
   }
 
   private static class ConfigurationAttributes {
+    public static final String COMMENT_DELIMETER = "#";
+
     // Attribute constants.
     public static final ConfigurationAttributes SERVER_SECTION
         = new ConfigurationAttributes("[server]");
